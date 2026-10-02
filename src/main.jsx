@@ -10,7 +10,56 @@ const photoOk=e=>{e.currentTarget.classList.add('loaded')};const photoFail=e=>{e
 function App(){const messagesRef=useRef(null),messagesEndRef=useRef(null);const{scrollYProgress}=useScroll();const scaleX=useSpring(scrollYProgress,{stiffness:100,damping:30});const[menu,setMenu]=useState(false),[cart,setCart]=useState([]),[drawer,setDrawer]=useState(false),[bot,setBot]=useState(false),[input,setInput]=useState(''),[typing,setTyping]=useState(false),[selected,setSelected]=useState(null),[gallery,setGallery]=useState('birthday'),[toast,setToast]=useState(''),[messages,setMessages]=useState([{from:'bot',text:'Welcome to Party Petals. What are you celebrating?',opts:chat.start[1]}]);const total=useMemo(()=>cart.reduce((s,x)=>s+x.p*x.q,0),[cart]);
 const scrollChat=(behavior='smooth')=>{requestAnimationFrame(()=>{const box=messagesRef.current;if(box)box.scrollTo({top:box.scrollHeight,behavior});messagesEndRef.current?.scrollIntoView({behavior,block:'nearest'})})};
 useEffect(()=>{if(!bot)return;const timer=setTimeout(()=>scrollChat(messages.length<=1?'auto':'smooth'),80);return()=>clearTimeout(timer)},[messages,typing,bot]);
-const go=id=>{document.getElementById(id)?.scrollIntoView({behavior:'smooth'});setMenu(false)};const notify=t=>{setToast(t);setTimeout(()=>setToast(''),2200)};const add=p=>{setCart(c=>c.some(x=>x.id===p.id)?c.map(x=>x.id===p.id?{...x,q:x.q+1}:x):[...c,{...p,q:1}]);setDrawer(true);notify(`${p.n} added`)};const qty=(id,n)=>setCart(c=>c.map(x=>x.id===id?{...x,q:x.q+n}:x).filter(x=>x.q));const openGallery=(d,type)=>{setSelected({name:d[0],style:d[1],img:`/designs/${d[2]}`});setGallery(type)};const step=n=>{if(n.startsWith('show')){const type=n.slice(4);return{from:'bot',text:`Here are ${type==='baby'?'baby shower':type} designs. Tap to preview.`,gallery:type}}if(n.startsWith('add')){const p=plans[+n.slice(3)-1];add(p);return{from:'bot',text:`${p.n} has been added to your plan.`}}if(n==='wa'){window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent('Hello Party Petals, I need help planning an event.')}`,'_blank');return{from:'bot',text:'Opening WhatsApp.'}}if(['packages','work','studio','book'].includes(n)){go(n);setBot(false);return null}return{from:'bot',text:chat[n]?.[0]||'How else can I help?',opts:chat[n]?.[1]}};const choose=(label,n)=>{setMessages(m=>[...m,{from:'user',text:label}]);setTyping(true);setTimeout(()=>{const r=step(n);if(r)setMessages(m=>[...m,r]);setTyping(false)},400)};const send=e=>{e.preventDefault();const v=input.trim();if(!v)return;setMessages(m=>[...m,{from:'user',text:v}]);setInput('');setTyping(true);setTimeout(()=>{const r=findReply(v);setMessages(m=>[...m,{from:'bot',text:r.answer,opts:r.opts,gallery:r.gallery}]);setTyping(false)},600)};const pay = () => {
+const go=id=>{document.getElementById(id)?.scrollIntoView({behavior:'smooth'});setMenu(false)};const notify=t=>{setToast(t);setTimeout(()=>setToast(''),2200)};const add=p=>{setCart(c=>c.some(x=>x.id===p.id)?c.map(x=>x.id===p.id?{...x,q:x.q+1}:x):[...c,{...p,q:1}]);setDrawer(true);notify(`${p.n} added`)};const qty=(id,n)=>setCart(c=>c.map(x=>x.id===id?{...x,q:x.q+n}:x).filter(x=>x.q));const openGallery=(d,type)=>{setSelected({name:d[0],style:d[1],img:`/designs/${d[2]}`});setGallery(type)};const step=n=>{if(n.startsWith('show')){const type=n.slice(4);return{from:'bot',text:`Here are ${type==='baby'?'baby shower':type} designs. Tap to preview.`,gallery:type}}if(n.startsWith('add')){const p=plans[+n.slice(3)-1];add(p);return{from:'bot',text:`${p.n} has been added to your plan.`}}if(n==='wa'){window.open(`https://wa.me/${PHONE}?text=${encodeURIComponent('Hello Party Petals, I need help planning an event.')}`,'_blank');return{from:'bot',text:'Opening WhatsApp.'}}if(['packages','work','studio','book'].includes(n)){go(n);setBot(false);return null}return{from:'bot',text:chat[n]?.[0]||'How else can I help?',opts:chat[n]?.[1]}};const choose=(label,n)=>{setMessages(m=>[...m,{from:'user',text:label}]);setTyping(true);setTimeout(()=>{const r=step(n);if(r)setMessages(m=>[...m,r]);setTyping(false)},400)};const send = async (e) => {
+  e.preventDefault();
+
+  const v = input.trim();
+
+  if (!v) return;
+
+  setMessages((m) => [
+    ...m,
+    {
+      from: 'user',
+      text: v
+    }
+  ]);
+
+  setInput('');
+  setTyping(true);
+
+  try {
+    const response = await fetch('/api/chat', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        message: v
+      })
+    });
+
+    const data = await response.json();
+
+    setMessages((m) => [
+      ...m,
+      {
+        from: 'bot',
+        text: data.reply || 'Sorry, I could not generate a response.'
+      }
+    ]);
+  } catch (error) {
+    setMessages((m) => [
+      ...m,
+      {
+        from: 'bot',
+        text: 'AI service is temporarily unavailable.'
+      }
+    ]);
+  }
+
+  setTyping(false);
+};const pay = () => {
   if (!total) {
     notify('Please add a package before continuing');
     return;
