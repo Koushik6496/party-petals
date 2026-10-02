@@ -1,0 +1,9 @@
+Copy your existing image files into this folder:
+birthday-blush.webp
+birthday-kids.webp
+birthday-teddy.webp
+wedding-plum.webp
+wedding-ivory.webp
+baby-moon.webp
+baby-pastel.webp
+proposal-night.webp
