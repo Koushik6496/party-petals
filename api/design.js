@@ -34,7 +34,6 @@ export default async function handler(req, res) {
         body: JSON.stringify({
           prompt,
           steps: 8,
-          seed: Math.floor(Math.random() * 1000000),
         }),
       }
     );
