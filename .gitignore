@@ -1,3 +1,15 @@
 node_modules
 dist
 .env
+.vercel
+.env*
+
+# Local secrets and generated files
+.env
+.env.*
+!.env.example
+.vercel/
+node_modules/
+dist/
+party-petals-*-project.txt
+design-test.json
