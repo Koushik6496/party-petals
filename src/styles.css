@@ -28,3 +28,57 @@
 
 /* EmailJS payment verification steps */
 .paymentVerify{padding:22px 27px 27px;display:grid;gap:14px}.paymentTimer,.paymentReference,.upiCopy{display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:15px;background:#eee5dc}.paymentTimer svg{width:22px;color:#8b6d45}.paymentTimer div,.paymentReference,.upiCopy>div{display:flex;flex-direction:column;gap:4px}.paymentTimer small,.paymentReference small,.upiCopy small{color:#88766e;font-size:8px;font-weight:700;letter-spacing:1.5px}.paymentTimer b{font-size:22px}.paymentTimer.expired{background:#f5dddd;color:#8d3232}.paymentReference{align-items:flex-start}.paymentReference b{font:22px Marcellus;letter-spacing:2px}.upiCopy{justify-content:space-between}.upiCopy button{display:flex;align-items:center;gap:7px;padding:9px 11px;border:1px solid #c9bbb1;border-radius:11px;background:#fff;color:var(--ink);font-size:9px;font-weight:700}.upiCopy button svg{width:14px}.paymentHelp{margin:0;color:#70666d;font-size:11px;line-height:1.65}.paymentVerify label{display:flex;flex-direction:column;gap:7px;color:var(--ink);font-size:8px;font-weight:700;letter-spacing:1.5px}.paymentVerify input{height:46px;padding:0 13px;color:var(--ink);background:#fff;border:1px solid #cabeb5;border-radius:13px;outline:none}.paymentVerify input:focus{border-color:#9c7949;box-shadow:0 0 0 3px rgba(220,191,125,.25)}.paymentError{margin:0;padding:11px 13px;border-radius:12px;background:#f7dede;color:#8e3030;font-size:11px;line-height:1.5}.paymentBack{border:0;background:none;color:#786b72;font-size:9px;font-weight:700;letter-spacing:1.3px}.paymentSubmitted{padding:34px 27px 32px;text-align:center}.paymentSubmittedIcon{width:58px;height:58px;margin:0 auto 15px;border-radius:50%;display:grid;place-items:center;background:#e1ecdf;color:#466243}.paymentSubmittedIcon svg{width:26px}.paymentSubmitted>small{color:#668060;font-size:9px;font-weight:700;letter-spacing:2px}.paymentSubmitted h3{margin:10px 0;font:30px Marcellus;letter-spacing:2px}.paymentSubmitted p{max-width:470px;margin:0 auto 13px;color:#6e646b;font-size:12px;line-height:1.7}.paymentSubmitted .paymentEmailNote{color:#52704d}.paymentSubmitted .gold{margin:20px auto 0;min-width:150px}
+
+/* Enhanced event and payment flow */
+.checkoutForm textarea{width:100%;min-height:92px;padding:12px 13px;resize:vertical;color:var(--ink);background:#fff;border:1px solid #cabeb5;border-radius:13px;outline:none}
+.checkoutForm textarea:focus{border-color:#9c7949;box-shadow:0 0 0 3px rgba(220,191,125,.25)}
+.paymentMethodStep{display:grid;gap:14px;padding:23px 27px 28px}
+.paymentMethodCard{width:100%;display:grid;grid-template-columns:44px minmax(0,1fr) 22px;align-items:center;gap:13px;padding:18px;color:var(--ink);background:#fff;border:1px solid #d7cbc2;border-radius:17px;text-align:left}
+.paymentMethodCard:hover{border-color:#9c7949;box-shadow:0 8px 26px rgba(23,19,28,.09)}
+.paymentMethodCard>svg:first-child{width:24px;height:24px;color:#8b6d45}.paymentMethodCard>svg:last-child{width:17px}
+.paymentMethodCard div{display:flex;flex-direction:column;gap:5px}.paymentMethodCard b{font-size:11px;letter-spacing:1.2px}.paymentMethodCard span{color:#746a70;font-size:11px;line-height:1.55}
+.paymentMethodCard:disabled{cursor:wait;opacity:.65}.paymentBack{display:flex;align-items:center;justify-content:center;gap:7px}.paymentBack svg{width:14px}
+.conceptAttached{display:flex!important;flex-direction:row!important;align-items:flex-start;gap:9px!important;padding:12px 13px;color:#405040;background:#e6eee5;border-radius:13px;font-size:10px!important;font-weight:500!important;letter-spacing:0!important;line-height:1.5}.conceptAttached svg{flex:0 0 16px;width:16px}
+.total>small{color:#766b71;line-height:1.55;text-align:center}
+.dsRequest:disabled{cursor:not-allowed;opacity:.5}
+@media(max-width:560px){.paymentMethodStep{padding:18px 20px 23px}.paymentMethodCard{grid-template-columns:38px minmax(0,1fr) 18px;padding:15px}}
+.dsCopied {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 11px 13px;
+  color: #405040;
+  background: #e6eee5;
+  border-radius: 12px;
+  font-size: 10px;
+  line-height: 1.5;
+}
+
+.dsCopied svg {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.dsCopyDetails {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: inherit;
+  background: transparent;
+  border: 1px solid currentColor;
+  border-radius: 13px;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+}
+
+.dsCopyDetails svg {
+  width: 15px;
+  height: 15px;
+}
