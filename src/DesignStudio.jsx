@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import {
   ArrowRight,
   Check,
-  Copy,
+  Download,
   Flower2,
   Sparkles,
 } from 'lucide-react';
@@ -24,11 +24,26 @@ const SPACES = [
 ];
 
 const PALETTES = [
-  ['Blush & gold', 'blush pink and gold'],
-  ['Ivory & sage', 'ivory and sage green'],
-  ['Navy & gold', 'navy blue and gold'],
-  ['Pastel', 'soft pastel colours'],
-  ['Surprise me', 'harmonious elegant colours'],
+  [
+    'Blush & gold',
+    'blush pink and gold',
+  ],
+  [
+    'Ivory & sage',
+    'ivory and sage green',
+  ],
+  [
+    'Navy & gold',
+    'navy blue and gold',
+  ],
+  [
+    'Pastel',
+    'soft pastel colours',
+  ],
+  [
+    'Surprise me',
+    'harmonious elegant colours',
+  ],
 ];
 
 function Chips({
@@ -43,9 +58,10 @@ function Chips({
           ? item[0]
           : item;
 
-        const selectedValue = Array.isArray(value)
-          ? value[0]
-          : value;
+        const selectedValue =
+          Array.isArray(value)
+            ? value[0]
+            : value;
 
         return (
           <button
@@ -56,29 +72,15 @@ function Chips({
                 : ''
             }
             key={label}
-            onClick={() => setValue(item)}
+            onClick={() =>
+              setValue(item)
+            }
           >
             {label}
           </button>
         );
       })}
     </div>
-  );
-}
-
-async function dataUrlToFile(
-  dataUrl,
-  fileName
-) {
-  const response = await fetch(dataUrl);
-  const blob = await response.blob();
-
-  return new File(
-    [blob],
-    fileName,
-    {
-      type: blob.type || 'image/jpeg',
-    }
   );
 }
 
@@ -101,23 +103,32 @@ export default function DesignStudio({
   const [busy, setBusy] =
     useState(false);
 
+  const [sharing, setSharing] =
+    useState(false);
+
   const [image, setImage] =
     useState('');
 
   const [error, setError] =
     useState('');
 
-  const [copied, setCopied] =
-    useState(false);
+  const [
+    shareNotice,
+    setShareNotice,
+  ] = useState('');
 
   const createConcept = async () => {
     if (!idea.trim()) {
+      setError(
+        'Please describe your event idea.'
+      );
+
       return;
     }
 
     setBusy(true);
     setError('');
-    setCopied(false);
+    setShareNotice('');
 
     const prompt =
       `Professional event decoration photograph, ` +
@@ -133,7 +144,8 @@ export default function DesignStudio({
           method: 'POST',
 
           headers: {
-            'Content-Type': 'application/json',
+            'Content-Type':
+              'application/json',
           },
 
           body: JSON.stringify({
@@ -142,12 +154,16 @@ export default function DesignStudio({
         }
       );
 
-      const data = await response.json();
+      const data =
+        await response.json();
 
-      if (!response.ok || !data.image) {
+      if (
+        !response.ok ||
+        !data.image
+      ) {
         throw new Error(
           data.error ||
-          'No image was returned.'
+            'No image was returned.'
         );
       }
 
@@ -164,7 +180,7 @@ export default function DesignStudio({
 
       setError(
         conceptError.message ||
-        'Concept generation is temporarily unavailable. Please try again.'
+          'Concept generation is temporarily unavailable. Please try again.'
       );
     } finally {
       setBusy(false);
@@ -172,42 +188,21 @@ export default function DesignStudio({
   };
 
   const buildMessage = () => {
-    return `Hello Party Petals, I want this custom concept.
+    return `Hello Party Petals, I want this custom event concept.
 
 Occasion: ${occasion}
 Space: ${space}
 Colours: ${palette[0]}
-Idea: ${idea}
+Idea: ${idea.trim()}
 
-Generated through the Party Petals Design Studio.`;
-  };
+A generated concept image has been downloaded from the Party Petals Design Studio. I will attach the image to this message.
 
-  const copyDetails = async text => {
-    try {
-      await navigator.clipboard.writeText(
-        text
-      );
-
-      setCopied(true);
-
-      setTimeout(() => {
-        setCopied(false);
-      }, 3000);
-
-      return true;
-    } catch (clipboardError) {
-      console.warn(
-        'Could not copy details:',
-        clipboardError
-      );
-
-      return false;
-    }
+Please share availability and further details.`;
   };
 
   const downloadImage = () => {
     if (!image) {
-      return;
+      return false;
     }
 
     const download =
@@ -216,114 +211,110 @@ Generated through the Party Petals Design Studio.`;
     download.href = image;
 
     download.download =
-      'party-petals-generated-concept.jpg';
+      `party-petals-${occasion
+        .toLowerCase()
+        .replace(
+          /[^a-z0-9]+/g,
+          '-'
+        )}-concept.jpg`;
 
-    document.body.appendChild(download);
+    document.body.appendChild(
+      download
+    );
 
     download.click();
     download.remove();
+
+    return true;
   };
 
-  const openWhatsApp = text => {
-    const whatsappUrl =
-      `https://wa.me/${phone}` +
-      `?text=${encodeURIComponent(text)}`;
+  const openPartyPetalsWhatsApp =
+    message => {
+      const cleanPhone = String(
+        phone || ''
+      ).replace(/\D/g, '');
 
-    window.open(
-      whatsappUrl,
-      '_blank',
-      'noopener,noreferrer'
-    );
-  };
-
-  const shareConcept = async () => {
-    if (!idea.trim()) {
-      setError(
-        'Please describe your idea first.'
-      );
-
-      return;
-    }
-
-    const text = buildMessage();
-
-    const detailsCopied =
-      await copyDetails(text);
-
-    if (!image) {
-      openWhatsApp(text);
-      return;
-    }
-
-    try {
-      const file = await dataUrlToFile(
-        image,
-        'party-petals-generated-concept.jpg'
-      );
-
-      const fileSharingSupported =
-        navigator.share &&
-        navigator.canShare?.({
-          files: [file],
-        });
-
-      if (fileSharingSupported) {
-        alert(
-          `${
-            detailsCopied
-              ? 'Your event details have been copied.'
-              : 'Your generated image is ready.'
-          }
-
-Next steps:
-
-1. Select WhatsApp
-2. Select Party Petals
-3. Paste the copied details as the image caption
-4. Send the message`
+      if (!cleanPhone) {
+        setError(
+          'Party Petals WhatsApp number is unavailable.'
         );
 
-        await navigator.share({
-          title:
-            'Party Petals Generated Concept',
-
-          files: [file],
-        });
-
         return;
       }
 
-      downloadImage();
+      const whatsappUrl =
+        `https://wa.me/${cleanPhone}` +
+        `?text=${encodeURIComponent(
+          message
+        )}`;
 
-      alert(
-        `${
-          detailsCopied
-            ? 'The concept image has been downloaded and your event details have been copied.'
-            : 'The concept image has been downloaded.'
-        }
+      window.open(
+        whatsappUrl,
+        '_blank',
+        'noopener,noreferrer'
+      );
+    };
 
-WhatsApp will open next.
-
-Attach the downloaded image and paste the copied event details.`
+  const shareConcept = () => {
+    if (!idea.trim()) {
+      setError(
+        'Please describe your event idea first.'
       );
 
-      openWhatsApp(text);
-    } catch (shareError) {
-      if (
-        shareError?.name ===
-        'AbortError'
-      ) {
-        return;
-      }
+      return;
+    }
 
+    if (!image) {
+      setError(
+        'Please generate a concept image first.'
+      );
+
+      return;
+    }
+
+    setSharing(true);
+    setError('');
+
+    const message = buildMessage();
+
+    try {
+      downloadImage();
+
+      setShareNotice(
+        'The concept image has been downloaded. Party Petals WhatsApp is opening with all details filled. Attach the downloaded image and tap Send.'
+      );
+
+      openPartyPetalsWhatsApp(
+        message
+      );
+    } catch (shareError) {
       console.error(
-        'Concept sharing failed:',
+        'Could not prepare concept sharing:',
         shareError
       );
 
-      downloadImage();
-      openWhatsApp(text);
+      setError(
+        'The concept could not be prepared for WhatsApp. Please try again.'
+      );
+    } finally {
+      setSharing(false);
     }
+  };
+
+  const downloadConceptOnly = () => {
+    if (!image) {
+      setError(
+        'Please generate a concept image first.'
+      );
+
+      return;
+    }
+
+    downloadImage();
+
+    setShareNotice(
+      'The generated concept image has been downloaded.'
+    );
   };
 
   return (
@@ -340,27 +331,37 @@ Attach the downloaded image and paste the copied event details.`
         <h2>
           Imagine it.
           <br />
-          <i>We will style it.</i>
+
+          <i>
+            We will style it.
+          </i>
         </h2>
 
         <p>
-          Build a visual direction, then
-          share the generated concept and
-          complete brief with Party Petals.
+          Build a visual direction,
+          generate a concept and send
+          the complete idea directly
+          to Party Petals.
         </p>
       </div>
 
       <div className="dsGrid">
         <div>
-          <label>OCCASION</label>
+          <label>
+            OCCASION
+          </label>
 
           <Chips
             items={OCCASIONS}
             value={occasion}
-            setValue={setOccasion}
+            setValue={
+              setOccasion
+            }
           />
 
-          <label>SPACE</label>
+          <label>
+            SPACE
+          </label>
 
           <Chips
             items={SPACES}
@@ -368,7 +369,9 @@ Attach the downloaded image and paste the copied event details.`
             setValue={setSpace}
           />
 
-          <label>COLOURS</label>
+          <label>
+            COLOURS
+          </label>
 
           <Chips
             items={PALETTES}
@@ -388,6 +391,7 @@ Attach the downloaded image and paste the copied event details.`
               );
 
               setError('');
+              setShareNotice('');
             }}
             placeholder="Sunset beach, red and black theme, lanterns and a floral arch..."
           />
@@ -395,7 +399,8 @@ Attach the downloaded image and paste the copied event details.`
           <button
             type="button"
             disabled={
-              !idea.trim() || busy
+              !idea.trim() ||
+              busy
             }
             className="gold dsGo"
             onClick={createConcept}
@@ -413,12 +418,13 @@ Attach the downloaded image and paste the copied event details.`
             </p>
           )}
 
-          {copied && (
+          {shareNotice && (
             <p className="dsCopied">
               <Check />
-              Event details copied. Paste
-              them into the WhatsApp image
-              caption.
+
+              <span>
+                {shareNotice}
+              </span>
             </p>
           )}
 
@@ -426,9 +432,16 @@ Attach the downloaded image and paste the copied event details.`
             type="button"
             className="dsRequest"
             onClick={shareConcept}
-            disabled={!idea.trim()}
+            disabled={
+              !idea.trim() ||
+              !image ||
+              sharing
+            }
           >
-            SHARE CONCEPT WITH PARTY PETALS
+            {sharing
+              ? 'OPENING PARTY PETALS...'
+              : 'SEND CONCEPT TO PARTY PETALS'}
+
             <ArrowRight />
           </button>
 
@@ -436,12 +449,12 @@ Attach the downloaded image and paste the copied event details.`
             <button
               type="button"
               className="dsCopyDetails"
-              onClick={() =>
-                copyDetails(buildMessage())
+              onClick={
+                downloadConceptOnly
               }
             >
-              <Copy />
-              COPY EVENT DETAILS
+              <Download />
+              DOWNLOAD CONCEPT IMAGE
             </button>
           )}
         </div>
