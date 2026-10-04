@@ -1,7 +1,7 @@
 import React,{useEffect,useMemo,useRef,useState}from'react';import{createRoot}from'react-dom/client';import{AnimatePresence,motion,useScroll,useSpring}from'framer-motion';import{ArrowLeft,ArrowRight,Check,ChevronLeft,ChevronRight,Flower2,Image,Maximize2,Menu,MessageCircle,Minus,Plus,Send,ShoppingBag,Sparkles,Star,X}from'lucide-react';import DesignStudio from './DesignStudio.jsx';
 import CheckoutModal from './CheckoutModal.jsx';
 import './styles.css';
-const PHONE='918367534497',UPI='8367534497-7@axl';
+const PHONE='916303627115',UPI='7993109482@axl';
 const INSTAGRAM='https://www.instagram.com/party._.petals?stkn=eWlhd2t1Z2ozOHY1';
 const plans=[{id:1,n:'The Intimate',p:3499,d:'For warm celebrations at home',f:['Statement backdrop','Organic balloon styling','Cake table composition','Personalised welcome sign']},{id:2,n:'The Signature',p:6499,d:'Our most-loved complete look',hot:true,f:['Concept-led stage styling','Premium balloon palette','Three-dimensional props','Cake and guest table details']},{id:3,n:'The Grand Edit',p:11999,d:'A room-transforming experience',f:['Full venue visual direction','Stage and entrance styling','Floral and lighting accents','Dedicated event coordinator']}];
 const createMediaRange=(category,start,end)=>Array.from(
